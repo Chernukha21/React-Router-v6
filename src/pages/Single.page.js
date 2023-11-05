@@ -1,11 +1,16 @@
 import React, {useEffect, useState} from 'react';
-import {useParams} from "react-router-dom";
-import {NavLink} from "react-router-dom";
+import {useParams, useNavigate} from "react-router-dom";
+import CustomLink from "../componets/CustomLink";
 
 
 const SinglePage = ({posts}) => {
     const {id} = useParams();
+    const navigate = useNavigate();
     const [post, setPost] = useState(null);
+
+    const goBack = () => navigate(-1);
+    const goHome = () => navigate('/', {replace: true});
+
     useEffect(() => {
         fetch(`https://jsonplaceholder.typicode.com/posts/${id}`)
             .then(res => res.json())
@@ -16,9 +21,11 @@ const SinglePage = ({posts}) => {
         <div>
             {post && (
                 <>
+                    <button onClick={goBack}>Go back</button>
+                    <button onClick={goHome}>Go home</button>
                     <h1>{post.title}</h1>
                     <p>{post.body}</p>
-                    <NavLink to={`/posts/${id}/edit`}>Edit</NavLink>
+                    <CustomLink to={`/posts/${id}/edit`}>Edit</CustomLink>
                 </>
             )}
         </div>

@@ -1,10 +1,12 @@
 import React from 'react';
 import {useState, useEffect} from "react";
-import {NavLink} from "react-router-dom";
+import {NavLink, useLocation} from "react-router-dom";
 
 
 const BlogPage = () => {
     const [posts, setPosts] = useState([]);
+    console.log(useLocation());
+
 
     useEffect(() => {
         fetch('https://jsonplaceholder.typicode.com/posts')
