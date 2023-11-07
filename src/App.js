@@ -10,6 +10,10 @@ import Layout from "./componets/Layout";
 import SinglePage from "./pages/Single.page";
 import CreatePost from "./componets/CreatePost";
 import EditPostPage from "./pages/EditPost.page";
+import LoginPage from "./pages/Login.page";
+import RequireAuth from "./hoc/RequireAuth";
+import {AuthProvider} from "./hoc/AuthProvider";
+
 
 function App() {
     const [isChecked, setIsChecked] = useState(false);
@@ -17,8 +21,9 @@ function App() {
     const handleCheckboxChange = () => {
         setIsChecked(!isChecked);
     };
+
     return (
-        <MyContextProvider>
+        <AuthProvider>
             <div className="App">
                 <Routes>
                     <Route path="/" element={<Layout/>}>
@@ -26,8 +31,13 @@ function App() {
                         <Route path="posts" element={<BlogPage/>}/>
                         <Route path="posts/:id" element={<SinglePage/>}/>
                         <Route path="posts/:id/edit" element={<EditPostPage/>}/>
-                        <Route path="posts/new" element={<CreatePost/>}/>
+                        <Route path="posts/new" element={
+                            <RequireAuth>
+                                <CreatePost/>
+                            </RequireAuth>
+                        }/>
                         <Route path="about" element={<AboutPage/>}/>
+                        <Route path="login" element={<LoginPage/>}/>
                         <Route path="about-us" element={<Navigate to="/about" replace/>}/>
                         <Route path="*" element={<NotFoundPage/>}/>
                     </Route>
@@ -43,7 +53,7 @@ function App() {
                     </label>
                 </div>
             </div>
-        </MyContextProvider>
+        </AuthProvider>
     );
 }
 
