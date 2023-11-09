@@ -1,35 +1,72 @@
-import React, {useEffect, useState} from 'react';
-import {useParams, useNavigate} from "react-router-dom";
+import React, {Suspense} from 'react';
+import {useLoaderData, useNavigate, defer, Await, useAsyncValue} from "react-router-dom";
 import CustomLink from "../componets/CustomLink";
 
+const Post = () => {
+    const post = useAsyncValue();
+    return <>
+        <h1>{post.title}</h1>
+        <p>{post.body}</p>
+    </>
 
-const SinglePage = ({posts}) => {
-    const {id} = useParams();
+}
+
+
+const Comments = () => {
+    const comments = useAsyncValue();
+    return (
+        <div>
+            <h2>Comments</h2>
+            {comments.map(comment => {
+                return <>
+                    <h3>{comment.email}</h3>
+                    <h4>{comment.name}</h4>
+                    <p>{comment.body}</p>
+                </>
+            })}
+        </div>
+    )
+}
+
+const SinglePage = () => {
     const navigate = useNavigate();
-    const [post, setPost] = useState(null);
+    const {post, comments, id} = useLoaderData();
 
     const goBack = () => navigate(-1);
     const goHome = () => navigate('/', {replace: true});
 
-    useEffect(() => {
-        fetch(`https://jsonplaceholder.typicode.com/posts/${id}`)
-            .then(res => res.json())
-            .then(data => setPost(data))
-    }, [id]);
-
     return (
         <div>
-            {post && (
-                <>
-                    <button onClick={goBack}>Go back</button>
-                    <button onClick={goHome}>Go home</button>
-                    <h1>{post.title}</h1>
-                    <p>{post.body}</p>
-                    <CustomLink to={`/posts/${id}/edit`}>Edit</CustomLink>
-                </>
-            )}
+            <button onClick={goBack}>Go back</button>
+            <button onClick={goHome}>Go home</button>
+            <Suspense fallback={<h2>Loading...</h2>}>
+                <Await resolve={post}>
+                    <Post />
+                </Await>
+            </Suspense>
+            <Suspense fallback={<h2>Loading...</h2>}>
+                <Await resolve={comments}>
+                    <Comments />
+                </Await>
+            </Suspense>
+            <CustomLink to={`/posts/${id}/edit`}>Edit</CustomLink>
         </div>
     );
 };
 
-export default SinglePage;
+async function getPostById(id) {
+    const res = await fetch(`https://jsonplaceholder.typicode.com/posts/${id}`);
+    return res.json();
+}
+
+async function getCommentsByPost(id){
+    const res = await fetch(`https://jsonplaceholder.typicode.com/posts/${id}/comments`);
+    return res.json();
+}
+
+const singlePostLoader = async ({params}) => {
+    const id = params.id;
+    return defer({post: await getPostById(id), id, comments: getCommentsByPost(id)});
+}
+
+export {SinglePage, singlePostLoader};
