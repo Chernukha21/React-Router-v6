@@ -1,7 +1,8 @@
 import React, {Suspense} from 'react';
-import {NavLink, useLoaderData, useSearchParams, defer, Await} from "react-router-dom";
+import {NavLink, useLoaderData, useSearchParams, defer, Await, json} from "react-router-dom";
 import CustomLink from "../componets/CustomLink";
 import BlogFilter from "../componets/BlogFilter";
+import Loading from "../componets/loading/Loading";
 
 
 const BlogPage = () => {
@@ -15,8 +16,8 @@ const BlogPage = () => {
         <div>
             <h1>Blog Page</h1>
             <BlogFilter latest={latest} searchQuery={searchQuery} setSearchParams={setSearchParams}/>
-            <CustomLink to="/posts/new">Add new post</CustomLink>
-            <Suspense fallback={<h2>Loading ...</h2>}>
+            <CustomLink to="new">Add new post</CustomLink>
+            <Suspense fallback={<Loading/>}>
                 <Await resolve={posts}>
                     {
                         (resolvedPosts) => (<> {resolvedPosts.filter(post => post.title.includes(searchQuery) && post.id >= startsFrom).map(post =>
@@ -37,9 +38,15 @@ async function getPosts() {
 }
 
 const blogLoader = async () => {
-    return defer({
-        posts: getPosts(),
-    })
+    const posts = await getPosts();
+
+    if (!posts.length) {
+        throw json({message: 'Not Found', reason: 'Wrong url'}, {status: 404})
+    }
+
+    return  {
+        posts
+    }
 }
 
 export {BlogPage, blogLoader};

@@ -7,24 +7,25 @@ import {BlogPage, blogLoader} from "./pages/Blog.page";
 import AboutPage from "./pages/About.page";
 import Layout from "./componets/Layout";
 import {SinglePage, singlePostLoader} from "./pages/Single.page";
-import CreatePost from "./componets/CreatePost";
-import EditPostPage from "./pages/EditPost.page";
+import {CreatePost, createPostAction} from "./componets/CreatePost";
+import {EditPostPage, updatePostAction} from "./pages/EditPost.page";
 import LoginPage from "./pages/Login.page";
 import RequireAuth from "./hoc/RequireAuth";
 import {AuthProvider} from "./hoc/AuthProvider";
+import ErrorPage from "./pages/Error.page";
 
 
 const router = createBrowserRouter(createRoutesFromElements(
-    <Route path="/" element={<Layout/>}>
+    <Route path="/" element={<Layout/>} >
         <Route index path="/" element={<HomePage/>}/>
-        <Route path="posts" element={<BlogPage/>} loader={blogLoader}/>
+        <Route path="posts" element={<BlogPage/>} loader={blogLoader} errorElement={<ErrorPage/>}/>
         <Route path="posts/:id" element={<SinglePage/>} loader={singlePostLoader}/>
-        <Route path="posts/:id/edit" element={<EditPostPage/>}/>
+        <Route path="posts/:id/edit" element={<EditPostPage/>} loader={singlePostLoader} action={updatePostAction}/>
         <Route path="posts/new" element={
             <RequireAuth>
                 <CreatePost/>
             </RequireAuth>
-        }/>
+        } action={createPostAction}/>
         <Route path="about/" element={<AboutPage/>}>
             <Route path="contacts" element={<p>Our Contacts</p>}/>
             <Route path="team" element={<p>Our Team</p>}/>
@@ -46,7 +47,7 @@ function App() {
     return (
         <AuthProvider>
             <div className="App">
-               <RouterProvider router={router}/>
+                <RouterProvider router={router}/>
                 <div>
                     <label>
                         <input

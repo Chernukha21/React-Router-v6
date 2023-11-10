@@ -1,0 +1,22 @@
+.loading_container {
+    height: 50vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.loading {
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+    border: 16px solid #61dafb;
+    border-top: 16px solid transparent;
+    animation: rotate 1s linear infinite;
+}
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}

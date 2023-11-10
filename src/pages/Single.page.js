@@ -1,6 +1,7 @@
 import React, {Suspense} from 'react';
 import {useLoaderData, useNavigate, defer, Await, useAsyncValue} from "react-router-dom";
 import CustomLink from "../componets/CustomLink";
+import Loading from "../componets/loading/Loading";
 
 const Post = () => {
     const post = useAsyncValue();
@@ -39,12 +40,12 @@ const SinglePage = () => {
         <div>
             <button onClick={goBack}>Go back</button>
             <button onClick={goHome}>Go home</button>
-            <Suspense fallback={<h2>Loading...</h2>}>
+            <Suspense fallback={<Loading/>}>
                 <Await resolve={post}>
                     <Post />
                 </Await>
             </Suspense>
-            <Suspense fallback={<h2>Loading...</h2>}>
+            <Suspense fallback={<Loading/>}>
                 <Await resolve={comments}>
                     <Comments />
                 </Await>
